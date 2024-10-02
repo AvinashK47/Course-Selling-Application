@@ -53,9 +53,9 @@ userRouter.post('/login',async(req,res)=>{
             message : "Sorry!!, User does not exist in our Database."
         })
     }
-    const token = await jwt.sign( { userId : existingUser._id } , process.env.JWT_SECRET );
+    const token = await jwt.sign( { userId : existingUser._id, role : 'user' } , process.env.JWT_SECRET );
     return res.json({
-        message : "Signed In",
+        message : "User Signed In",
         token : token
     })
 })
