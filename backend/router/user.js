@@ -1,12 +1,15 @@
 const express = require('express');
-const userRouter = require('./routes');
-const { userModel } = require('../../database');
+const { userModel } = require('../database');
 const jwt = require('jsonwebtoken');
 require("dotenv").config();
 
-const router = express.Router();
+const userRouter = express.Router();
 
-router.post('/signup',async(req,res)=>{
+userRouter.get('/',(req,res)=>{
+    res.send("User home page")
+})
+
+userRouter.post('/signup',async(req,res)=>{
 
     const {name , password , email } = req.body;
 
@@ -35,7 +38,7 @@ router.post('/signup',async(req,res)=>{
     }
 })
 
-router.post('/login',async(req,res)=>{
+userRouter.post('/login',async(req,res)=>{
     
     const {name,password,email} = req.body;
 
@@ -50,11 +53,11 @@ router.post('/login',async(req,res)=>{
             message : "Sorry!!, User does not exist in our Database."
         })
     }
-    const token = jwt.sign( existingUser._id , process.env.JWT_SECRET);
+    const token = await jwt.sign( { userId : existingUser._id } , process.env.JWT_SECRET );
     return res.json({
         message : "Signed In",
         token : token
     })
 })
 
-module.exports = router
+module.exports = userRouter;

@@ -1,14 +1,16 @@
-const express = require('express')
+const express = require('express');
+const userRouter = require('./user');
+const adminRouter = require('./admin');
+const courseRouter = require('./course');
+
 const router = express.Router();
-const userRouter = require('./user')
-const adminRouter = require('./admin')
 
 router.get('/home',(req,res)=>{
     res.send("Home Page");
 })
 
-router.get('/user',userRouter);
+router.use('/user',userRouter);
+router.use('/admin',adminRouter);
+router.use('/courses',courseRouter);
 
-router.get('/admin',adminRouter)
-
-module.exports = router , {userRouter , adminRouter}
+module.exports = router ;
