@@ -7,6 +7,8 @@ const app = express();
 
 ConnectDB();
 
+app.use(express.json());
+
 app.use('/',RootRouter);
 
 app.listen(process.env.PORT,()=>{

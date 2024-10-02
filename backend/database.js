@@ -2,8 +2,15 @@ const mongoose = require('mongoose');
 
 require("dotenv").config()
 
-function ConnectDB(){
-    mongoose.connect(process.env.MONGO_URL);
+async function ConnectDB(){
+    
+    try{
+        await mongoose.connect(process.env.MONGO_URL);
+        console.log("Connected to Database!!")
+    }
+    catch(err){
+        console.log("Mongoose Connection Error : ",err);
+    }
 }
 
 const userSchema = new mongoose.Schema({
