@@ -1,17 +1,30 @@
 const express = require('express');
 const adminRouter = express.Router();
-const { authMiddleware } = require('../middlewares/authMiddleware');
-const { courseModel } = require('../database');
+const { courseModel, adminModel } = require('../database');
+const { default: adminAuth } = require('../middlewares/adminAuth');
 
 adminRouter.get('/',(req,res)=>{
     res.send("admin page");
 })
 
-adminRouter.post('/signup',function(req,res){
-    res.send("admin signup page");
+adminRouter.post('/signup',async (req,res)=>{
+    const {username,password} = req.body;
+    const admin = await adminModel.findOne({username,password});
+    if(admin){
+        return res.json({message : "Administrator already exists"})
+    }
+    else{
+        await adminModel.create({
+            username : username,
+            password : password
+        });
+    }
+})
+adminRouter.post('/login',async(req,res)=>{
+    
 })
 
-adminRouter.post('/create',authMiddleware,async(req,res)=>{
+adminRouter.post('/create',adminAuth,async(req,res)=>{
 
     const {title,description,price,content} = req.body;
 
@@ -28,14 +41,14 @@ adminRouter.post('/create',authMiddleware,async(req,res)=>{
         res.json({message : "There was an error"})
     }
 })
-    
-adminRouter.put('/delete',authMiddleware,async (req,res)=>{
+
+adminRouter.put('/delete',adminAuth,async (req,res)=>{
     const {title} = req.body;
     const deleteCourse = await courseModel.deleteOne({
         title : title
     })
     if(deleteCourse){
-        res.json({ 
+        res.json({
             title : title,
             message : "Course deleted"
         })

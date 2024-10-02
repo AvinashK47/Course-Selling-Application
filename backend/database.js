@@ -40,7 +40,7 @@ const adminSchema = new mongoose.Schema({
         min : 6 ,
         max : 16
     }
-})
+});
 
 const courseSchema = new mongoose.Schema({
     title : {
@@ -57,11 +57,30 @@ const courseSchema = new mongoose.Schema({
         type : Number,
         require : true
     }
-})
+});
+
+const purchasedCourseSchema = new mongoose.Schema({
+    userId : {
+        type : mongoose.Schema.Types.ObjectId , ref : 'User', required : true
+    },
+    courseId : {
+        type : mongoose.Schema.Types.ObjectId , ref : 'Course', required : true
+    }
+});
 
 const userModel = mongoose.model('User',userSchema);
 const adminModel = mongoose.model('Admin',adminSchema);
-const courseModel = mongoose.model('Courses',courseSchema);
+const courseModel = mongoose.model('Course',courseSchema);
+const purchasedModel = mongoose.model('PurchasedCourse',purchasedCourseSchema);
 
-
-module.exports = { userSchema , adminSchema , courseSchema , ConnectDB , userModel , adminModel , courseModel }
+module.exports = {
+    userSchema,
+    adminSchema,
+    courseSchema,
+    purchasedCourseSchema,
+    ConnectDB,
+    userModel,
+    adminModel,
+    courseModel,
+    purchasedModel
+}
