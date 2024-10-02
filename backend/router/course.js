@@ -1,16 +1,16 @@
 const express = require('express');
 const courseRouter = express.Router();
-const { authMiddleware } = require('../middlewares/authMiddleware');
+const { authMiddleware, userAuthMiddleware } = require('../middlewares/authMiddleware');
 const { courseModel } = require('../database');
 
-courseRouter.get('/',authMiddleware,(req,res)=>{
+courseRouter.get('/',authMiddleware,userAuthMiddleware,(req,res)=>{
     return res.send("Course Page");
 })
 
-courseRouter.get('/all',authMiddleware,async(req,res)=>{
+courseRouter.get('/all',authMiddleware,userAuthMiddleware,async(req,res)=>{
     try{
         const courses = await courseModel.find();
-        return res.json({courses});
+        return res.json(courses);
     }
     catch(err){
         console.log("Error fetching courses : ",err)
@@ -18,7 +18,7 @@ courseRouter.get('/all',authMiddleware,async(req,res)=>{
     }
 })
 
-courseRouter.post('/purchase',async(req,res)=>{
+courseRouter.post('/purchase',authMiddleware,userAuthMiddleware,async(req,res)=>{
     
     const {courseId} = req.body;
     const selectedCourse = await courseModel.findOne();
@@ -32,7 +32,7 @@ courseRouter.post('/purchase',async(req,res)=>{
     return res.json({message : "purchase complete"})
 })
 
-courseRouter.get('/purchased',authMiddleware,(req,res)=>{
+courseRouter.get('/purchased',authMiddleware,userAuthMiddleware,(req,res)=>{
     res.send("purchased courses");
 })
 

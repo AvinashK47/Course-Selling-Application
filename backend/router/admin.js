@@ -3,7 +3,7 @@ const adminRouter = express.Router();
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const { courseModel, adminModel } = require('../database');
-const { authMiddleware } = require('../middlewares/authMiddleware');
+const { authMiddleware, adminAuthMiddleware } = require('../middlewares/authMiddleware');
 
 adminRouter.get('/',(req,res)=>{
     res.send("admin page");
@@ -27,7 +27,7 @@ adminRouter.post('/login',async(req,res)=>{
     
     const {username , password} = req.body;
     
-    const newAdmin = await adminModel.findOne({username});
+    const newAdmin = await adminModel.findOne({username,password});
     
     if(!newAdmin){
         return res.json({message : "Admin does not exist"});
@@ -40,7 +40,7 @@ adminRouter.post('/login',async(req,res)=>{
     });
 });
 
-adminRouter.post('/create',authMiddleware,async(req,res)=>{
+adminRouter.post('/create',authMiddleware,adminAuthMiddleware,async(req,res)=>{
 
     const {title,description,price,content} = req.body;
 
@@ -58,19 +58,26 @@ adminRouter.post('/create',authMiddleware,async(req,res)=>{
     }
 });
 
-adminRouter.put('/delete',authMiddleware,async (req,res)=>{
+adminRouter.delete('/delete',authMiddleware,adminAuthMiddleware,async (req,res)=>{
+
     const {title} = req.body;
-    const deleteCourse = await courseModel.deleteOne({
-        title : title
-    });
-    if(deleteCourse){
+    
+    const courseToDelete = await courseModel.findOne({title : title});
+    
+    if(!courseToDelete){
         res.json({
-            title : title,
-            message : "Course deleted"
+            message : "Course not found"
         });
     }
+    
+    const deleteCourse = await courseModel.deleteOne({title : title});
+    
+    if(deleteCourse){
+        res.json({message : "course deleted"})
+    }
+    
     else{
-        res.json({message :"there was an error"});
+        res.json({message : "there was an error"})
     }
 });
 

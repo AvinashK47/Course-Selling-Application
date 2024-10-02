@@ -6,7 +6,7 @@ require("dotenv").config();
 const userRouter = express.Router();
 
 userRouter.get('/',(req,res)=>{
-    res.send("User home page")
+    res.send("User home page");
 })
 
 userRouter.post('/signup',async(req,res)=>{
@@ -19,24 +19,24 @@ userRouter.post('/signup',async(req,res)=>{
         if(existingUser){
             return res.json({
                 message : "User Already Exists"
-            })
+            });
         }
         await userModel.create({
             name : name,
             password : password,
             email : email
-        })
+        });
         return res.json({
             message  : "User Created Successfully"
-        })
+        });
     }
     catch(err){
         console.log(err);
         return res.status(500).json({
             message : "Internal Server Error Occured"
-        })
+        });
     }
-})
+});
 
 userRouter.post('/login',async(req,res)=>{
     
@@ -46,18 +46,18 @@ userRouter.post('/login',async(req,res)=>{
         name : name,
         password : password,
         email : email
-    })
+    });
 
     if(!existingUser){
         return res.json({
             message : "Sorry!!, User does not exist in our Database."
-        })
+        });
     }
     const token = await jwt.sign( { userId : existingUser._id, role : 'user' } , process.env.JWT_SECRET );
     return res.json({
         message : "User Signed In",
         token : token
-    })
+    });
 })
 
 module.exports = userRouter;

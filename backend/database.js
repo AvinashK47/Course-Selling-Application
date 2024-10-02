@@ -56,6 +56,10 @@ const courseSchema = new mongoose.Schema({
     price : {
         type : Number,
         require : true
+    },
+    content : {
+        type : String,
+        require : true
     }
 });
 

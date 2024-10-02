@@ -7,20 +7,45 @@ async function authMiddleware (req,res,next){
         
         const decodedData = await jwt.verify( token , process.env.JWT_SECRET );
         
-        if(decodedData && decodedData.role === 'user' ){
-            req.userId = decodedData.userId ;
-            next();
-        }
-        else if(decodedData && decodedData.role === 'admin'){
-            req.adminId = decodedData.adminId ;
-            next();
-        }
-        else{
-            res.json({message : "Incorrect Credentials / Insufficient Privileges"});
-        }
+        req.decodedData = decodedData;
+
+        next();
     }
     catch(error){
         return res.json({message : "Invalid Token" , error : error})
     }
 }
-module.exports = {authMiddleware}
+
+function adminAuthMiddleware(req,res,next){
+    const decodedData = req.decodedData;
+    try{
+        if(decodedData && decodedData.role === 'admin'){
+            req.adminId = decodedData.adminId ;
+            next();
+        } 
+        else {
+            return res.status(403).json({ message: "Forbidden: Admin access only" });
+        }
+    }
+    catch(err){
+        return res.json({error:err});
+    }
+}
+
+function userAuthMiddleware(req,res,next){
+    const decodedData = req.decodedData;
+    try{
+        if(decodedData && decodedData.role === 'user' ){
+            req.userId = decodedData.userId ;
+            next();
+        }
+        else {
+            return res.status(403).json({ message: "Forbidden: User access only" });
+        }
+    }
+    catch(err){
+        return res.json({error:err});
+    }
+}
+
+module.exports = {authMiddleware , adminAuthMiddleware , userAuthMiddleware }
